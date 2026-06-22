@@ -91,7 +91,7 @@
         "refreshToken": {
           "type": "string",
           "description": "iFinD / QuantAPI refresh_token. Used to obtain access_token.",
-          "required": false,
+          "required": true,
           "helpUrl": "https://quantapi.10jqka.com.cn/gwstatic/static/ds_web/super-command-web/index.html#/AccountDetails",
           "helpLabel": "Get refresh_token"
         },
