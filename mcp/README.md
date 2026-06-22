@@ -6,7 +6,8 @@
 
 ```txt
 mcp/
-  servers/        MCP 服务器源码包
+  servers/        MCP 服务器 marketplace 声明
+  packages/       社区维护的 MCP 服务器源码包
   index.json      自动生成的 MCP 轻量索引
   packages.json   自动生成的 MCP 服务器包列表，供 Chat 加载
 ```
@@ -15,8 +16,22 @@ mcp/
 
 1. 复制 `templates/mcp-server.json` 到 `mcp/servers/<mcp-id>.json`。
 2. 填写名称、描述、仓库地址、启动命令、参数和配置项。
-3. 运行 `npm run check`。
-4. 提交 MCP 源码包以及生成后的 `mcp/index.json`、`mcp/packages.json`。
+3. 如果 MCP 由社区维护，把源码放到 `mcp/packages/<mcp-id>-mcp/`。
+4. 运行 `npm run check`。
+5. 提交 MCP 声明、源码包以及生成后的 `mcp/index.json`、`mcp/packages.json`。
+
+## 本地验证社区 MCP
+
+发布前先在源码包目录验证：
+
+```bash
+cd mcp/packages/<mcp-id>-mcp
+npm install
+npm run check
+npm pack --dry-run
+```
+
+如果 `mcp/servers/<mcp-id>.json` 使用 `npx -y <npm-package>` 启动，Chat 用户只有在 npm 包发布后才能直接启用。开发阶段不要把本地绝对路径写进 marketplace 声明；需要本地联调时，在 Chat 的本地 MCP 配置里临时覆盖启动命令。
 
 Chat 当前加载地址：
 

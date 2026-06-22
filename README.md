@@ -27,6 +27,7 @@
 - MCP：外部工具运行时或连接器
 - Model Provider：模型服务商接入说明和能力声明
 - Tool Adapter：由 OpenAPI 或其他协议适配出来的工具包
+- Finance / Trading：策略交易、模拟执行和券商连接器
 
 ## 仓库结构
 

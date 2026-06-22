@@ -30,5 +30,23 @@
       "status": "published",
       "review": "approved"
     }
+  },
+  {
+    "id": "paper-broker",
+    "version": "0.1.0",
+    "name": "Paper Broker",
+    "description": "Simulated broker connector for dry-run order execution, portfolio checks, and strategy trading tests.",
+    "tags": [
+      "community",
+      "broker",
+      "trading",
+      "paper",
+      "simulation"
+    ],
+    "path": "mcp/servers/paper-broker.json",
+    "release": {
+      "status": "published",
+      "review": "approved"
+    }
   }
 ]
