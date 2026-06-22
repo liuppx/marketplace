@@ -95,6 +95,8 @@ Chat 应用当前加载 MCP 服务器包地址：
 https://raw.githubusercontent.com/yeying-community/marketplace/main/mcp/packages.json
 ```
 
+社区维护的 MCP 源码包位于 `mcp/packages/`。如果 MCP 声明通过 `npx -y @yeying-community/<package>` 启动，需要通过 GitHub Actions 发布到 npm。仓库 secret 使用 `npm_token`，workflow 是 `Publish MCP Packages`。
+
 ## Chat 集成
 
 Chat 应用当前应该加载：

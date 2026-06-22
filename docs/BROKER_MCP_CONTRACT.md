@@ -1,6 +1,12 @@
 # Broker MCP 契约
 
-本文定义策略交易 skill 需要的 broker connector 最小能力。真实券商和模拟券商都应该尽量对齐这个工具面。
+本文定义策略交易 skill 需要的 broker connector 最小能力。生产目标是接入真实券商；模拟券商只用于开发验证和演练，不应被包装成生产实盘能力。
+
+## 连接器类型
+
+- `live broker`：真实券商或交易柜台连接器，例如 QMT / miniQMT / PTrade / IBKR / Futu。可以真实下单，必须启用风控、确认和审计。
+- `paper broker`：模拟交易连接器，只能验证策略、工具链路和交互流程，不能真实下单。
+- `data provider`：行情、财务、公告、选股等数据源，例如同花顺 QuantAPI / iFinD。它不是 broker，不能承担下单职责。当前 marketplace 中对应 `ifind-data`。
 
 ## 工具列表
 
@@ -92,8 +98,9 @@
 
 ## 安全规则
 
-- 默认只允许 `dry_run_order`。
+- 默认只允许 `dry_run_order`，除非用户显式启用真实下单。
 - 实盘 `place_order` 必须依赖用户显式确认。
+- 实盘 connector 必须暴露是否启用真实下单的配置，例如 `enableLiveTrading`。
 - connector 必须返回订单 ID 和状态，不能只返回成功文本。
 - connector 必须暴露资金、持仓和订单查询能力，便于 skill 做执行前后校验。
 - connector 不应把密钥写进 marketplace 包；密钥只能由用户运行时配置。
