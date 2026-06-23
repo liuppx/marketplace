@@ -28,10 +28,10 @@
       "type": "string"
     },
     "name": {
-      "type": "string"
+      "$ref": "#/$defs/localizedText"
     },
     "description": {
-      "type": "string"
+      "$ref": "#/$defs/localizedText"
     },
     "repo": {
       "type": "string"
@@ -78,5 +78,20 @@
       }
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "$defs": {
+    "localizedText": {
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "properties": {
+            "cn": { "type": "string" },
+            "en": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
 }

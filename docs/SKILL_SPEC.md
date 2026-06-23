@@ -5,8 +5,8 @@
 - `schemaVersion`: current value is `1.0`
 - `id`: stable kebab-case identifier
 - `version`: semantic version
-- `name`: localized name
-- `description`: short task-focused description
+- `name`: localized name, usually `{ "cn": "...", "en": "..." }`
+- `description`: localized short task-focused description
 - `category`: broad category
 - `launch`: where the skill starts
 - `instructions`: prompt or instruction source
@@ -33,8 +33,14 @@ Examples:
   "tools": [
     {
       "id": "web_search",
-      "name": "Web Search",
-      "description": "Use model-provider web search",
+      "name": {
+        "cn": "网页搜索",
+        "en": "Web Search"
+      },
+      "description": {
+        "cn": "当模型服务商支持时，使用内置网页搜索能力。",
+        "en": "Use model-provider web search"
+      },
       "required": false
     }
   ],
@@ -42,7 +48,10 @@ Examples:
     "servers": [
       {
         "id": "fetch",
-        "name": "Fetch",
+        "name": {
+          "cn": "网页抓取",
+          "en": "Fetch"
+        },
         "transport": "stdio",
         "required": false
       }
@@ -67,4 +76,3 @@ Chat should resolve runtime status after installation:
 - `ready`: model and required tools are available
 - `needs_config`: some configurable dependency is missing
 - `unavailable`: required model or runtime is not available
-

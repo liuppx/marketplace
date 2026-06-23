@@ -2,8 +2,14 @@
   "schemaVersion": "1.0",
   "id": "brave-search",
   "version": "1.0.0",
-  "name": "Brave Search",
-  "description": "Use Brave Search API for web search and current information retrieval.",
+  "name": {
+    "cn": "Brave 搜索",
+    "en": "Brave Search"
+  },
+  "description": {
+    "cn": "使用 Brave Search API 进行网页搜索和实时信息检索。",
+    "en": "Use Brave Search API for web search and current information retrieval."
+  },
   "repo": "https://github.com/brave/brave-search-mcp-server",
   "tags": ["official", "search", "web"],
   "command": "npx",
@@ -13,10 +19,16 @@
     "properties": {
       "braveApiKey": {
         "type": "string",
-        "description": "Brave Search API Key.",
+        "description": {
+          "cn": "Brave Search API Key。",
+          "en": "Brave Search API Key."
+        },
         "required": true,
         "helpUrl": "https://api-dashboard.search.brave.com/login",
-        "helpLabel": "Get API Key"
+        "helpLabel": {
+          "cn": "获取 API Key",
+          "en": "Get API Key"
+        }
       }
     }
   },

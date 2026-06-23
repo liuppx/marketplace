@@ -51,19 +51,28 @@
     "servers": [
       {
         "id": "ifind-data",
-        "name": "iFinD Data",
+        "name": {
+          "cn": "同花顺 iFinD 数据",
+          "en": "iFinD Data"
+        },
         "transport": "stdio",
         "required": true
       },
       {
         "id": "qmt-broker",
-        "name": "QMT Broker",
+        "name": {
+          "cn": "QMT 实盘券商",
+          "en": "QMT Broker"
+        },
         "transport": "stdio",
         "required": false
       },
       {
         "id": "paper-broker",
-        "name": "Paper Broker",
+        "name": {
+          "cn": "模拟券商",
+          "en": "Paper Broker"
+        },
         "transport": "stdio",
         "required": false
       }

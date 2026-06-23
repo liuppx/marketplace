@@ -59,19 +59,28 @@
         "servers": [
           {
             "id": "ifind-data",
-            "name": "iFinD Data",
+            "name": {
+              "cn": "同花顺 iFinD 数据",
+              "en": "iFinD Data"
+            },
             "transport": "stdio",
             "required": true
           },
           {
             "id": "qmt-broker",
-            "name": "QMT Broker",
+            "name": {
+              "cn": "QMT 实盘券商",
+              "en": "QMT Broker"
+            },
             "transport": "stdio",
             "required": false
           },
           {
             "id": "paper-broker",
-            "name": "Paper Broker",
+            "name": {
+              "cn": "模拟券商",
+              "en": "Paper Broker"
+            },
             "transport": "stdio",
             "required": false
           }
@@ -155,8 +164,14 @@
       "tools": [
         {
           "id": "web_search",
-          "name": "Web Search",
-          "description": "Use model-provider web search when available.",
+          "name": {
+            "cn": "网页搜索",
+            "en": "Web Search"
+          },
+          "description": {
+            "cn": "当模型服务商支持时，使用内置网页搜索能力。",
+            "en": "Use model-provider web search when available."
+          },
           "required": false
         }
       ],
@@ -164,13 +179,19 @@
         "servers": [
           {
             "id": "fetch",
-            "name": "Fetch",
+            "name": {
+              "cn": "网页抓取",
+              "en": "Fetch"
+            },
             "transport": "stdio",
             "required": false
           },
           {
             "id": "brave-search",
-            "name": "Brave Search",
+            "name": {
+              "cn": "Brave 搜索",
+              "en": "Brave Search"
+            },
             "transport": "stdio",
             "required": false
           }
@@ -244,8 +265,14 @@
       "tools": [
         {
           "id": "web_search",
-          "name": "Web Search",
-          "description": "Use model-provider web search when available.",
+          "name": {
+            "cn": "网页搜索",
+            "en": "Web Search"
+          },
+          "description": {
+            "cn": "当模型服务商支持时，使用内置网页搜索能力。",
+            "en": "Use model-provider web search when available."
+          },
           "required": false
         }
       ],
@@ -253,7 +280,10 @@
         "servers": [
           {
             "id": "fetch",
-            "name": "Fetch",
+            "name": {
+              "cn": "网页抓取",
+              "en": "Fetch"
+            },
             "transport": "stdio",
             "required": false
           }
@@ -336,19 +366,28 @@
         "servers": [
           {
             "id": "ifind-data",
-            "name": "iFinD Data",
+            "name": {
+              "cn": "同花顺 iFinD 数据",
+              "en": "iFinD Data"
+            },
             "transport": "stdio",
             "required": true
           },
           {
             "id": "qmt-broker",
-            "name": "QMT Broker",
+            "name": {
+              "cn": "QMT 实盘券商",
+              "en": "QMT Broker"
+            },
             "transport": "stdio",
             "required": false
           },
           {
             "id": "paper-broker",
-            "name": "Paper Broker",
+            "name": {
+              "cn": "模拟券商",
+              "en": "Paper Broker"
+            },
             "transport": "stdio",
             "required": false
           }

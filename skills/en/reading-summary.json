@@ -41,8 +41,14 @@
   "tools": [
     {
       "id": "web_search",
-      "name": "Web Search",
-      "description": "Use model-provider web search when available.",
+      "name": {
+        "cn": "网页搜索",
+        "en": "Web Search"
+      },
+      "description": {
+        "cn": "当模型服务商支持时，使用内置网页搜索能力。",
+        "en": "Use model-provider web search when available."
+      },
       "required": false
     }
   ],
@@ -50,7 +56,10 @@
     "servers": [
       {
         "id": "fetch",
-        "name": "Fetch",
+        "name": {
+          "cn": "网页抓取",
+          "en": "Fetch"
+        },
         "transport": "stdio",
         "required": false
       }

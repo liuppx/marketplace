@@ -2,8 +2,14 @@
   "schemaVersion": "1.0",
   "id": "ifind-data",
   "version": "0.1.0",
-  "name": "iFinD Data",
-  "description": "TongHuaShun iFinD / QuantAPI market data connector for strategy research, signals, and pre-trade checks.",
+  "name": {
+    "cn": "同花顺 iFinD 数据",
+    "en": "iFinD Data"
+  },
+  "description": {
+    "cn": "同花顺 iFinD / QuantAPI 行情数据连接器，用于策略调研、信号生成和交易前检查。",
+    "en": "TongHuaShun iFinD / QuantAPI market data connector for strategy research, signals, and pre-trade checks."
+  },
   "repo": "https://github.com/yeying-community/marketplace/tree/main/mcp/packages/ifind-data-mcp",
   "tags": ["community", "market-data", "ifind", "quantapi", "tonghuashun", "trading"],
   "command": "npx",
@@ -13,24 +19,39 @@
     "properties": {
       "refreshToken": {
         "type": "string",
-        "description": "iFinD / QuantAPI refresh_token. Used to obtain access_token.",
+        "description": {
+          "cn": "iFinD / QuantAPI refresh_token，用于获取 access_token。",
+          "en": "iFinD / QuantAPI refresh_token. Used to obtain access_token."
+        },
         "required": true,
         "helpUrl": "https://quantapi.10jqka.com.cn/gwstatic/static/ds_web/super-command-web/index.html#/AccountDetails",
-        "helpLabel": "Get refresh_token"
+        "helpLabel": {
+          "cn": "获取 refresh_token",
+          "en": "Get refresh_token"
+        }
       },
       "accessToken": {
         "type": "string",
-        "description": "Optional existing access_token. If omitted, refreshToken is used.",
+        "description": {
+          "cn": "可选的已有 access_token；不填写时使用 refreshToken 自动获取。",
+          "en": "Optional existing access_token. If omitted, refreshToken is used."
+        },
         "required": false
       },
       "baseUrl": {
         "type": "string",
-        "description": "QuantAPI HTTP base URL. Defaults to https://quantapi.51ifind.com/api/v1.",
+        "description": {
+          "cn": "QuantAPI HTTP 基础地址，默认 https://quantapi.51ifind.com/api/v1。",
+          "en": "QuantAPI HTTP base URL. Defaults to https://quantapi.51ifind.com/api/v1."
+        },
         "required": false
       },
       "requestTimeoutMs": {
         "type": "string",
-        "description": "HTTP request timeout in milliseconds. Defaults to 30000.",
+        "description": {
+          "cn": "HTTP 请求超时时间，单位毫秒，默认 30000。",
+          "en": "HTTP request timeout in milliseconds. Defaults to 30000."
+        },
         "required": false
       }
     }
