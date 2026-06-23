@@ -2,8 +2,14 @@
   {
     "id": "brave-search",
     "version": "1.0.0",
-    "name": "Brave Search",
-    "description": "Use Brave Search API for web search and current information retrieval.",
+    "name": {
+      "cn": "Brave 搜索",
+      "en": "Brave Search"
+    },
+    "description": {
+      "cn": "使用 Brave Search API 进行网页搜索和实时信息检索。",
+      "en": "Use Brave Search API for web search and current information retrieval."
+    },
     "tags": [
       "official",
       "search",
@@ -18,8 +24,14 @@
   {
     "id": "fetch",
     "version": "1.0.0",
-    "name": "Fetch",
-    "description": "Fetch and convert web content for reading, summarization, and research workflows.",
+    "name": {
+      "cn": "网页抓取",
+      "en": "Fetch"
+    },
+    "description": {
+      "cn": "抓取并转换网页内容，用于阅读、总结和调研工作流。",
+      "en": "Fetch and convert web content for reading, summarization, and research workflows."
+    },
     "tags": [
       "official",
       "web",
@@ -34,8 +46,14 @@
   {
     "id": "ifind-data",
     "version": "0.1.0",
-    "name": "iFinD Data",
-    "description": "TongHuaShun iFinD / QuantAPI market data connector for strategy research, signals, and pre-trade checks.",
+    "name": {
+      "cn": "同花顺 iFinD 数据",
+      "en": "iFinD Data"
+    },
+    "description": {
+      "cn": "同花顺 iFinD / QuantAPI 行情数据连接器，用于策略调研、信号生成和交易前检查。",
+      "en": "TongHuaShun iFinD / QuantAPI market data connector for strategy research, signals, and pre-trade checks."
+    },
     "tags": [
       "community",
       "market-data",
@@ -53,8 +71,14 @@
   {
     "id": "paper-broker",
     "version": "0.1.0",
-    "name": "Paper Broker",
-    "description": "Simulated broker connector for dry-run order execution, portfolio checks, and strategy trading tests.",
+    "name": {
+      "cn": "模拟券商",
+      "en": "Paper Broker"
+    },
+    "description": {
+      "cn": "模拟券商连接器，用于订单演练、组合检查和策略交易测试。",
+      "en": "Simulated broker connector for dry-run order execution, portfolio checks, and strategy trading tests."
+    },
     "tags": [
       "community",
       "broker",
@@ -71,8 +95,14 @@
   {
     "id": "qmt-broker",
     "version": "0.1.0",
-    "name": "QMT Broker",
-    "description": "Live broker connector for A-share strategy trading through local MiniQMT and xtquant.",
+    "name": {
+      "cn": "QMT 实盘券商",
+      "en": "QMT Broker"
+    },
+    "description": {
+      "cn": "通过本地 MiniQMT 和 xtquant 连接 A 股实盘券商，用于策略交易执行。",
+      "en": "Live broker connector for A-share strategy trading through local MiniQMT and xtquant."
+    },
     "tags": [
       "community",
       "broker",

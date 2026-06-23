@@ -20,6 +20,15 @@ function assert(condition, message) {
   }
 }
 
+function isLocalizedText(value) {
+  if (typeof value === "string") return value.length > 0;
+  return Boolean(
+    value &&
+      typeof value === "object" &&
+      (typeof value.cn === "string" || typeof value.en === "string"),
+  );
+}
+
 function validateSkill(skill, file) {
   assert(skill.schemaVersion === "1.0", `${file}: schemaVersion must be 1.0`);
   assert(
@@ -27,7 +36,7 @@ function validateSkill(skill, file) {
     `${file}: id must be kebab-case`,
   );
   assert(typeof skill.version === "string", `${file}: version is required`);
-  assert(skill.name, `${file}: name is required`);
+  assert(isLocalizedText(skill.name), `${file}: name is required`);
   assert(skill.launch?.type, `${file}: launch.type is required`);
   assert(skill.instructions?.type, `${file}: instructions.type is required`);
   assert(skill.release?.status !== "removed", `${file}: removed skills should not be committed`);
@@ -40,9 +49,9 @@ function validateMcpServer(server, file) {
     `${file}: id must be kebab-case`,
   );
   assert(typeof server.version === "string", `${file}: version is required`);
-  assert(typeof server.name === "string" && server.name, `${file}: name is required`);
+  assert(isLocalizedText(server.name), `${file}: name is required`);
   assert(
-    typeof server.description === "string" && server.description,
+    isLocalizedText(server.description),
     `${file}: description is required`,
   );
   assert(typeof server.repo === "string" && server.repo, `${file}: repo is required`);

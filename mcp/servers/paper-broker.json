@@ -2,8 +2,14 @@
   "schemaVersion": "1.0",
   "id": "paper-broker",
   "version": "0.1.0",
-  "name": "Paper Broker",
-  "description": "Simulated broker connector for dry-run order execution, portfolio checks, and strategy trading tests.",
+  "name": {
+    "cn": "模拟券商",
+    "en": "Paper Broker"
+  },
+  "description": {
+    "cn": "模拟券商连接器，用于订单演练、组合检查和策略交易测试。",
+    "en": "Simulated broker connector for dry-run order execution, portfolio checks, and strategy trading tests."
+  },
   "repo": "https://github.com/yeying-community/marketplace/tree/main/mcp/packages/paper-broker-mcp",
   "tags": ["community", "broker", "trading", "paper", "simulation"],
   "command": "npx",
@@ -13,27 +19,42 @@
     "properties": {
       "initialCash": {
         "type": "string",
-        "description": "Initial paper trading cash balance, for example 100000.",
+        "description": {
+          "cn": "模拟交易初始现金余额，例如 100000。",
+          "en": "Initial paper trading cash balance, for example 100000."
+        },
         "required": false
       },
       "market": {
         "type": "string",
-        "description": "Default market scope, for example CN-A, HK, US, or CRYPTO.",
+        "description": {
+          "cn": "默认市场范围，例如 CN-A、HK、US 或 CRYPTO。",
+          "en": "Default market scope, for example CN-A, HK, US, or CRYPTO."
+        },
         "required": false
       },
       "currency": {
         "type": "string",
-        "description": "Paper trading account currency, for example USD, CNY, or HKD.",
+        "description": {
+          "cn": "模拟交易账户币种，例如 USD、CNY 或 HKD。",
+          "en": "Paper trading account currency, for example USD, CNY, or HKD."
+        },
         "required": false
       },
       "allowShort": {
         "type": "boolean",
-        "description": "Whether simulated sell orders can open short positions. Disabled by default.",
+        "description": {
+          "cn": "模拟卖出订单是否允许开空仓，默认关闭。",
+          "en": "Whether simulated sell orders can open short positions. Disabled by default."
+        },
         "required": false
       },
       "requireConfirmation": {
         "type": "boolean",
-        "description": "Whether place_order requires confirmed=true after explicit user confirmation. Enabled by default.",
+        "description": {
+          "cn": "place_order 是否要求用户明确确认后传入 confirmed=true，默认开启。",
+          "en": "Whether place_order requires confirmed=true after explicit user confirmation. Enabled by default."
+        },
         "required": false
       }
     }

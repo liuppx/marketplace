@@ -40,13 +40,13 @@ cp templates/skill.json skills/cn/<skill-id>.json
 编辑技能包时重点填写：
 
 - `id`：稳定 ID，使用 kebab-case，例如 `web-research`
-- `name`：用户看到的名称，必须清晰、聚焦
-- `description`：说明这个技能适合什么任务
+- `name`：用户看到的名称，必须清晰、聚焦；推荐使用 `{ "cn": "...", "en": "..." }`
+- `description`：说明这个技能适合什么任务；推荐使用 `{ "cn": "...", "en": "..." }`
 - `launch`：点击技能后进入聊天还是工作区
 - `instructions`：模型运行时的任务说明
 - `model`：模型偏好、候选模型或是否跟随全局模型
-- `tools`：内置工具，例如 `web_search`
-- `mcp.servers`：MCP 依赖，例如 `fetch`、`brave-search`
+- `tools`：内置工具，例如 `web_search`，其中 `name/description` 支持中英文
+- `mcp.servers`：MCP 依赖，例如 `fetch`、`brave-search`，其中 `name` 支持中英文
 - `permissions`：网络、文件、钱包等权限声明
 - `release`：发布状态和审核状态
 
@@ -74,13 +74,13 @@ cp templates/mcp-server.json mcp/servers/<mcp-id>.json
 编辑 MCP 服务器包时重点填写：
 
 - `id`：稳定 ID，使用 kebab-case，例如 `brave-search`
-- `name`：用户看到的名称，必须清晰、聚焦
-- `description`：说明这个 MCP 适合提供什么工具能力
+- `name`：用户看到的名称，必须清晰、聚焦；推荐使用 `{ "cn": "...", "en": "..." }`
+- `description`：说明这个 MCP 适合提供什么工具能力；推荐使用 `{ "cn": "...", "en": "..." }`
 - `repo`：源码或官方说明地址
 - `command`：启动命令，例如 `npx`、`uvx`
 - `baseArgs`：启动参数，不包含用户密钥
 - `configurable`：是否需要用户配置
-- `configSchema`：需要用户填写的配置项
+- `configSchema`：需要用户填写的配置项，配置项的 `description/helpLabel/itemLabel/addButtonText` 支持中英文
 - `argsMapping`：配置项如何映射到参数或环境变量
 - `release`：发布状态和审核状态
 

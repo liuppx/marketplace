@@ -2,8 +2,14 @@
   "schemaVersion": "1.0",
   "id": "qmt-broker",
   "version": "0.1.0",
-  "name": "QMT Broker",
-  "description": "Live broker connector for A-share strategy trading through local MiniQMT and xtquant.",
+  "name": {
+    "cn": "QMT 实盘券商",
+    "en": "QMT Broker"
+  },
+  "description": {
+    "cn": "通过本地 MiniQMT 和 xtquant 连接 A 股实盘券商，用于策略交易执行。",
+    "en": "Live broker connector for A-share strategy trading through local MiniQMT and xtquant."
+  },
   "repo": "https://github.com/yeying-community/marketplace/tree/main/mcp/packages/qmt-broker-mcp",
   "tags": ["community", "broker", "trading", "qmt", "live-trading", "a-share"],
   "command": "npx",
@@ -13,32 +19,50 @@
     "properties": {
       "qmtUserdataPath": {
         "type": "string",
-        "description": "MiniQMT userdata_mini path, for example D:\\QMT\\userdata_mini.",
+        "description": {
+          "cn": "MiniQMT userdata_mini 路径，例如 D:\\QMT\\userdata_mini。",
+          "en": "MiniQMT userdata_mini path, for example D:\\QMT\\userdata_mini."
+        },
         "required": true
       },
       "accountId": {
         "type": "string",
-        "description": "Broker fund account id.",
+        "description": {
+          "cn": "券商资金账号。",
+          "en": "Broker fund account id."
+        },
         "required": true
       },
       "accountType": {
         "type": "string",
-        "description": "QMT account type, usually STOCK or CREDIT.",
+        "description": {
+          "cn": "QMT 账号类型，通常是 STOCK 或 CREDIT。",
+          "en": "QMT account type, usually STOCK or CREDIT."
+        },
         "required": false
       },
       "pythonCommand": {
         "type": "string",
-        "description": "Python command with xtquant installed, for example python or python3.",
+        "description": {
+          "cn": "已安装 xtquant 的 Python 命令，例如 python 或 python3。",
+          "en": "Python command with xtquant installed, for example python or python3."
+        },
         "required": false
       },
       "enableLiveTrading": {
         "type": "boolean",
-        "description": "Enable real order submission. Keep disabled until account, risk controls, and confirmation flow are verified.",
+        "description": {
+          "cn": "启用真实下单。账号、风控和确认流程验证完成前请保持关闭。",
+          "en": "Enable real order submission. Keep disabled until account, risk controls, and confirmation flow are verified."
+        },
         "required": true
       },
       "requireConfirmation": {
         "type": "boolean",
-        "description": "Require confirmed=true for place_order. Enabled by default.",
+        "description": {
+          "cn": "place_order 是否要求 confirmed=true，默认开启。",
+          "en": "Require confirmed=true for place_order. Enabled by default."
+        },
         "required": false
       }
     }

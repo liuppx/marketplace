@@ -15,7 +15,7 @@ mcp/
 ## 添加 MCP
 
 1. 复制 `templates/mcp-server.json` 到 `mcp/servers/<mcp-id>.json`。
-2. 填写名称、描述、仓库地址、启动命令、参数和配置项。
+2. 填写名称、描述、仓库地址、启动命令、参数和配置项；面向用户展示的名称、描述和配置说明推荐同时提供 `cn/en`。
 3. 如果 MCP 由社区维护，把源码放到 `mcp/packages/<mcp-id>-mcp/`。
 4. 运行 `npm run check`。
 5. 提交 MCP 声明、源码包以及生成后的 `mcp/index.json`、`mcp/packages.json`。
