@@ -7,6 +7,8 @@ description: Access YeYing community Project's standard APIs with AK/SK-signed a
 
 Use the bundled client to treat Project as the source of truth for task context and execution updates, and as the shared hub for community documents. Never place AK/SK credentials in a repository, command output, task comment, or final response.
 
+For work performed by Codex, Claude, or another Agent on a specific task, use the independent execution archive workflow in [references/execution-archive.md](references/execution-archive.md). It records the available execution history, publishes the archive as task attachments, and writes one idempotent task reference. This workflow belongs to Project and does not require or call `community-warehouse-skill`.
+
 ## Client
 
 Run:
@@ -38,6 +40,12 @@ python3 scripts/project_api.py status --task-id 123 --flow-item-id 9
 python3 scripts/project_api.py status --task-id 123 --completed
 python3 scripts/project_api.py file-info --file-id 456
 python3 scripts/project_api.py download --file-id 456 --output /tmp/document.pdf
+
+# Task execution archive
+python3 scripts/project_execution_archive.py start --project-id 8 --task-id 123 --source-tool codex --state /tmp/execution.json --output-dir /tmp/execution
+python3 scripts/project_execution_archive.py append --state /tmp/execution.json --role user --content "用户请求"
+python3 scripts/project_execution_archive.py finalize --state /tmp/execution.json --incomplete --missing "平台隐藏上下文"
+python3 scripts/project_execution_archive.py publish --state /tmp/execution.json
 ```
 
 ### File cabinet management
@@ -90,6 +98,10 @@ All successful commands print JSON to stdout. Failures print a concise error to 
 4. For substantial work, post a short progress comment only when it provides durable coordination value. Do not post routine tool narration.
 5. After verification, post a result comment containing the outcome, important files or behavior changed, tests run, and any blocker or remaining work.
 6. Keep the user's chat response aligned with what was written back to Project.
+
+## Task Execution Archive
+
+When an AI client or Agent is carrying out a concrete Project task, preserve the complete history available to the caller: user messages, assistant messages, tool calls, tool results, attachment references, decisions, and the final result. Start an `executionId`, append records as they become available, finalize the three archive files, then publish them to the task. The archive must be marked incomplete when the host cannot expose hidden context or full tool output. Use the same `executionId` for retries so publication can verify and reuse existing task attachments.
 
 ## File Cabinet Workflow
 
