@@ -21,7 +21,7 @@ def value(payload: dict[str, Any], *keys: str) -> Any:
     return None
 
 
-def normalize(payload: dict[str, Any], line_number: int) -> dict[str, Any]:
+def normalize(payload: dict[str, Any], line_number: int = 0) -> dict[str, Any]:
     raw_type = str(value(payload, "type", "event", "kind") or "event")
     type_aliases = {
         "message": "assistant_message",
@@ -42,7 +42,8 @@ def normalize(payload: dict[str, Any], line_number: int) -> dict[str, Any]:
     event_id = value(payload, "event_id", "eventId", "id")
     if event_id is None:
         seed = json.dumps(payload, ensure_ascii=False, sort_keys=True, default=str)
-        event_id = "codex-" + hashlib.sha256(f"{line_number}:".encode() + seed.encode()).hexdigest()[:24]
+        # Content-derived IDs remain stable when a client retries or reorders a JSONL batch.
+        event_id = "codex-" + hashlib.sha256(seed.encode()).hexdigest()[:24]
     event: dict[str, Any] = {
         "event_id": str(event_id),
         "type": event_type,
