@@ -19,9 +19,29 @@ python3 scripts/project_api.py <command> [options]
 
 The script resolves configuration in this order:
 
-1. `YEYING_PROJECT_URL`, `YEYING_PROJECT_AK`, `YEYING_PROJECT_SK`
+1. command-line `--config`
 2. `YEYING_PROJECT_CONFIG`
-3. `~/.config/yeying/project.json`
+3. `~/.yeying/skills/project/config.toml`
+
+The configuration file is TOML:
+
+[project]
+url = "http://127.0.0.1:8080"
+access_key = "your-project-access-key"
+secret_key = "your-project-secret-key"
+```
+
+Use a custom file with:
+
+```bash
+python3 scripts/project_api.py --config /path/to/project.toml projects
+```
+
+Create the default file at `~/.yeying/skills/project/config.toml`, or point `YEYING_PROJECT_CONFIG` to another local TOML file. Environment variables `YEYING_PROJECT_URL`, `YEYING_PROJECT_AK`, and `YEYING_PROJECT_SK` take precedence over the corresponding TOML fields. Keep this file outside Git and restrict its permissions, for example `chmod 600 ~/.yeying/skills/project/config.toml`.
+
+Legacy JSON files are not part of the shared skill configuration contract.
+
+The Project API configuration and task binding are separate: `.project-task.json` contains only `project_id` and `task_id`, never AK/SK. The capture scripts resolve task binding from explicit arguments, `YEYING_PROJECT_ID`/`YEYING_PROJECT_TASK_ID`, or the nearest `.project-task.json`.
 
 Available commands:
 
@@ -113,6 +133,10 @@ For automatic client integration, use the client-neutral JSONL bridge described 
 
 Claude Code hook payloads can be translated with `scripts/project_claude_hook.py`; Codex or other Agent JSONL can be translated with `scripts/project_codex_events.py`. These adapters do not install hooks or alter client configuration automatically. The host must explicitly register them and provide a reliable Project task binding.
 
+The capture bridge can discover `project_id` and `task_id` from explicit arguments, `YEYING_PROJECT_ID`/`YEYING_PROJECT_TASK_ID`, or the nearest `.project-task.json`. It fails closed when the binding is incomplete.
+
+For one-event-at-a-time Claude hooks, use `scripts/project_execution_event.py` as described in [references/claude-hooks.md](references/claude-hooks.md). It persists each event before the next hook starts and only finalizes on an explicit stop/session-end hook.
+
 ## File Cabinet Workflow
 
 The file cabinet is a per-user document store with optional sharing. Files are organized in a folder tree; root is `pid=0`.
@@ -156,8 +180,8 @@ The bundled first-phase wrapper is available as:
 
 ```bash
 python3 scripts/project_docs_sync.py check --config docs-sync.json
-python3 scripts/project_docs_sync.py plan --config docs-sync.json
-python3 scripts/project_docs_sync.py apply --config docs-sync.json
+python3 scripts/project_docs_sync.py plan --config docs-sync.json --project-config /path/to/project.toml
+python3 scripts/project_docs_sync.py apply --config docs-sync.json --project-config /path/to/project.toml
 ```
 
 `check` does not require Project credentials. `plan` and `apply` require an AK/SK token created with the Project `file_cabinet` permission scope. The wrapper writes a local state file beside the configuration (or the path passed with `--state`); keep that state out of source control when it contains environment-specific file IDs.

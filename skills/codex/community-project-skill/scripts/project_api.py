@@ -8,7 +8,6 @@ import datetime as dt
 import hashlib
 import hmac
 import json
-import os
 import re
 import secrets
 import sys
@@ -18,8 +17,7 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
-
-DEFAULT_CONFIG = Path.home() / ".config" / "yeying" / "project.json"
+from project_config import ConfigError, load as load_project_config
 
 
 class ProjectApiError(RuntimeError):
@@ -95,27 +93,16 @@ def markdown_to_task_html(content: str) -> str:
     return "".join(blocks)
 
 
-def load_config() -> dict[str, str]:
-    config_path = Path(os.environ.get("YEYING_PROJECT_CONFIG", DEFAULT_CONFIG)).expanduser()
-    config: dict[str, Any] = {}
-    if config_path.exists():
-        try:
-            config = json.loads(config_path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
-            raise ProjectApiError(f"无法读取配置 {config_path}: {exc}") from exc
-
-    resolved = {
-        "url": os.environ.get("YEYING_PROJECT_URL") or config.get("url", ""),
-        "access_key": os.environ.get("YEYING_PROJECT_AK") or config.get("access_key", ""),
-        "secret_key": os.environ.get("YEYING_PROJECT_SK") or config.get("secret_key", ""),
+def load_config(explicit_path: str | Path | None = None) -> dict[str, str]:
+    try:
+        settings = load_project_config(explicit_path)
+    except ConfigError as exc:
+        raise ProjectApiError(str(exc)) from exc
+    return {
+        "url": settings.base_url,
+        "access_key": settings.access_key,
+        "secret_key": settings.secret_key,
     }
-    missing = [key for key, value in resolved.items() if not value]
-    if missing:
-        raise ProjectApiError(
-            f"缺少配置: {', '.join(missing)}。请设置环境变量或创建 {config_path}"
-        )
-    resolved["url"] = resolved["url"].rstrip("/")
-    return resolved
 
 
 def canonical_query(params: dict[str, Any]) -> str:
@@ -252,6 +239,7 @@ def request_upload(
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="YeYing Project 自动化协作客户端")
+    parser.add_argument("--config", help="TOML 配置文件，默认 ~/.yeying/skills/project/config.toml")
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("projects", help="列出令牌可访问项目")
 
@@ -354,7 +342,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     args = build_parser().parse_args()
     try:
-        config = load_config()
+        config = load_config(args.config)
         if args.command == "projects":
             data = request_api(config, "GET", "/api/project/lists", {"getstatistics": "no"})
         elif args.command == "tasks":

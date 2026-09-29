@@ -214,11 +214,15 @@ def verify_existing(api: dict[str, str], item: dict[str, Any], path: Path) -> No
         raise ProjectApiError(f"任务已有同名归档但内容不同: {path.name}")
 
 
-def publish(state_path: Path, state: dict[str, Any]) -> dict[str, Any]:
+def publish(
+    state_path: Path,
+    state: dict[str, Any],
+    config_path: str | Path | None = None,
+) -> dict[str, Any]:
     archive_dir = Path(state.get("archive_dir", ""))
     if state.get("status") not in ("succeeded", "incomplete") or not archive_dir.is_dir():
         raise ProjectApiError("请先执行 finalize")
-    api = load_config()
+    api = load_config(config_path) if config_path else load_config()
     existing = existing_task_files(api, int(state["task_id"]))
     dialog_id = task_dialog_id(api, int(state["task_id"]))
     uploaded: list[dict[str, Any]] = []
@@ -293,6 +297,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     publish_cmd = sub.add_parser("publish", help="上传归档到任务并写入引用")
     publish_cmd.add_argument("--state", type=Path, required=True)
+    publish_cmd.add_argument("--config", help="Project TOML 配置文件")
     return parser
 
 
@@ -343,7 +348,7 @@ def main() -> int:
             print(json.dumps({"executionId": state["execution_id"], "archiveDir": str(output_dir), "files": state["archive_files"]}, ensure_ascii=False, indent=2))
         elif args.command == "publish":
             state = load_state(args.state)
-            print(json.dumps(publish(args.state, state), ensure_ascii=False, indent=2))
+            print(json.dumps(publish(args.state, state, args.config), ensure_ascii=False, indent=2))
         return 0
     except (ProjectApiError, OSError, ValueError) as exc:
         print(f"错误: {exc}", file=sys.stderr)
