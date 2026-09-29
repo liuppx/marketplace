@@ -45,8 +45,18 @@ cat events.jsonl | python3 scripts/project_execution_capture.py \
 
 ## 适配器职责
 
-- Claude：由 Claude Code hook 将事件转换为 JSONL。
-- Codex：由 Codex 可用的 session/event 输出或外层 wrapper 转换为 JSONL。
+- Claude：将 Claude Code hook 的 stdin 转为一行 JSONL：
+
+  ```bash
+  python3 scripts/project_claude_hook.py >> /tmp/project-events.jsonl
+  ```
+
+- Codex：将 Codex 或其他 Agent 的 JSONL 事件标准化：
+
+  ```bash
+  cat codex-events.jsonl | python3 scripts/project_codex_events.py >> /tmp/project-events.jsonl
+  ```
+
 - 其他 Agent：实现同一 JSONL 协议即可接入。
 
 任务 ID、Project 身份和用户授权仍必须由宿主提供；没有可靠任务绑定时，桥接器不得自动上传。

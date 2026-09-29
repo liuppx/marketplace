@@ -111,6 +111,8 @@ When an AI client or Agent is carrying out a concrete Project task, preserve the
 
 For automatic client integration, use the client-neutral JSONL bridge described in [references/auto-capture.md](references/auto-capture.md). The bridge accepts events from hooks, wrappers, or native event streams; it does not claim access to hidden prompts or internal reasoning and must not upload when the target task is ambiguous.
 
+Claude Code hook payloads can be translated with `scripts/project_claude_hook.py`; Codex or other Agent JSONL can be translated with `scripts/project_codex_events.py`. These adapters do not install hooks or alter client configuration automatically. The host must explicitly register them and provide a reliable Project task binding.
+
 ## File Cabinet Workflow
 
 The file cabinet is a per-user document store with optional sharing. Files are organized in a folder tree; root is `pid=0`.
