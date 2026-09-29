@@ -24,9 +24,11 @@ def config():
     return base, token
 
 
-def request(method, path, token, payload=None):
+def request(method, path, token, payload=None, trace_id=None):
     body = None
     headers = {"Authorization": "Bearer " + token, "Accept": "application/json"}
+    if trace_id:
+        headers["X-Trace-ID"] = trace_id
     if payload is not None:
         body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         headers["Content-Type"] = "application/json"
@@ -50,6 +52,13 @@ def request(method, path, token, payload=None):
         return 12
 
 
+def call_tool(base, token, name, arguments, trace_id=None):
+    payload = {"name": name, "arguments": arguments}
+    if trace_id:
+        payload["traceId"] = trace_id
+    return request("POST", base + "/api/v1/public/tools/warehouse/call", token, payload, trace_id)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -57,25 +66,32 @@ def main():
     call = sub.add_parser("call")
     call.add_argument("name")
     call.add_argument("arguments", nargs="?", default="{}", help="JSON object")
+    call.add_argument("--trace-id")
     put = sub.add_parser("put")
     put.add_argument("path")
     put.add_argument("content")
     put.add_argument("--content-type", default="text/markdown; charset=utf-8")
     put.add_argument("--encoding", choices=("utf-8", "base64"), default="utf-8")
     put.add_argument("--overwrite", action="store_true")
+    put.add_argument("--if-match", help="覆盖时要求对象 ETag 匹配")
+    put.add_argument("--checksum-sha256", help="内容 SHA-256，支持 hex 或 base64")
+    put.add_argument("--trace-id")
     read = sub.add_parser("read")
     read.add_argument("path")
     read.add_argument("--max-bytes", type=int)
+    read.add_argument("--trace-id")
     listing = sub.add_parser("list")
     listing.add_argument("prefix", nargs="?", default="/")
     listing.add_argument("--delimiter", default="/")
+    listing.add_argument("--trace-id")
     stat = sub.add_parser("stat")
     stat.add_argument("path")
+    stat.add_argument("--trace-id")
     args = parser.parse_args()
     base, token = config()
 
     if args.command == "catalog":
-        return request("GET", base + "/api/v1/public/tools/warehouse", token)
+        return request("GET", base + "/api/v1/public/tools/warehouse", token, trace_id=getattr(args, "trace_id", None))
     if args.command == "call":
         try:
             arguments = json.loads(args.arguments)
@@ -83,27 +99,25 @@ def main():
             fail("arguments must be valid JSON: %s" % exc)
         if not isinstance(arguments, dict):
             fail("arguments must be a JSON object")
-        return request("POST", base + "/api/v1/public/tools/warehouse/call", token,
-                       {"name": args.name, "arguments": arguments})
+        return call_tool(base, token, args.name, arguments, args.trace_id)
     if args.command == "put":
-        return request("POST", base + "/api/v1/public/tools/warehouse/call", token, {
-            "name": "warehouse.object.put",
-            "arguments": {"path": args.path, "content": args.content,
-                           "encoding": args.encoding, "contentType": args.content_type,
-                           "overwrite": args.overwrite},
-        })
+        arguments = {"path": args.path, "content": args.content,
+                     "encoding": args.encoding, "contentType": args.content_type,
+                     "overwrite": args.overwrite}
+        if args.if_match:
+            arguments["ifMatch"] = args.if_match
+        if args.checksum_sha256:
+            arguments["checksumSha256"] = args.checksum_sha256
+        return call_tool(base, token, "warehouse.object.put", arguments, args.trace_id)
     if args.command == "read":
         arguments = {"path": args.path, "mode": "content"}
         if args.max_bytes is not None:
             arguments["maxBytes"] = args.max_bytes
-        return request("POST", base + "/api/v1/public/tools/warehouse/call", token,
-                       {"name": "warehouse.object.read", "arguments": arguments})
+        return call_tool(base, token, "warehouse.object.read", arguments, args.trace_id)
     if args.command == "list":
-        return request("POST", base + "/api/v1/public/tools/warehouse/call", token,
-                       {"name": "warehouse.object.list", "arguments":
-                        {"prefix": args.prefix, "delimiter": args.delimiter}})
-    return request("POST", base + "/api/v1/public/tools/warehouse/call", token,
-                   {"name": "warehouse.object.stat", "arguments": {"path": args.path}})
+        return call_tool(base, token, "warehouse.object.list",
+                         {"prefix": args.prefix, "delimiter": args.delimiter}, args.trace_id)
+    return call_tool(base, token, "warehouse.object.stat", {"path": args.path}, args.trace_id)
 
 
 if __name__ == "__main__":
