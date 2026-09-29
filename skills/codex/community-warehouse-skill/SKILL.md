@@ -46,7 +46,7 @@ description: Use YeYing Warehouse's generic, scoped, auditable object capabiliti
 
 ## 认证配置
 
-配置加载顺序为：命令行 `--config`、`YEYING_WAREHOUSE_CONFIG`、默认文件 `~/.yeying/skills/warehouse/config.toml`。环境变量 `YEYING_WAREHOUSE_URL` 和 `YEYING_WAREHOUSE_TOOL_TOKEN` 会覆盖 TOML 中的同名字段；完整约定见 [配置约定](references/configuration.md)。
+配置加载顺序为：命令行 `--config`、`YEYING_WAREHOUSE_CONFIG`、默认文件 `~/.yeying/skills/warehouse/config.toml`。环境变量 `YEYING_WAREHOUSE_URL`、`YEYING_WAREHOUSE_TOOL_TOKEN` 和 `YEYING_WAREHOUSE_UPLOAD_DIRECTORY` 会覆盖 TOML 中的同名字段；完整约定见 [配置约定](references/configuration.md)。
 
 当前 HTTP Tool 入口使用 Warehouse 的用户态 Bearer JWT。安装 Skill 不会自动获得登录身份，调用方必须在运行环境中显式提供：
 
@@ -64,7 +64,7 @@ export YEYING_WAREHOUSE_TOOL_TOKEN="<短期 scoped Tool credential>"
 - 其他系统的 AK/SK 或内部服务凭证不具备 Warehouse 资产访问权限。
 - Warehouse 已支持短期、可撤销、限制用户/路径/动作/有效期的 Tool credential。无人值守调用应使用 `YEYING_WAREHOUSE_TOOL_TOKEN`，避免长期保存用户 JWT。
 
-本 Skill 提供的 `scripts/warehouse_tool.py` 可用于验证和自动化调用。它支持 Tool catalog、通用 call，以及 `put`、`read`、`list`、`stat` 快捷操作；认证失败、权限拒绝、冲突和超限会以非零退出码返回。`scripts/warehouse_acceptance.py` 用于对已部署服务执行非破坏性的生产冒烟检查。
+本 Skill 提供的 `scripts/warehouse_tool.py` 可用于验证和自动化调用。它支持 Tool catalog、通用 call，以及 `put`、`put-file`、`read`、`list`、`stat` 快捷操作；`put-file` 可把明确指定的本地文件写入配置的远端默认目录，或写入命令行给出的完整 Warehouse 路径。认证失败、权限拒绝、冲突和超限会以非零退出码返回。`scripts/warehouse_acceptance.py` 用于对已部署服务执行非破坏性的生产冒烟检查。
 
 Warehouse 资产 Tool 已通过 HTTP Tool 入口映射现有资产 API：
 

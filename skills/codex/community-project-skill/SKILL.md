@@ -46,6 +46,12 @@ python3 scripts/project_execution_archive.py start --project-id 8 --task-id 123 
 python3 scripts/project_execution_archive.py append --state /tmp/execution.json --role user --content "用户请求"
 python3 scripts/project_execution_archive.py finalize --state /tmp/execution.json --incomplete --missing "平台隐藏上下文"
 python3 scripts/project_execution_archive.py publish --state /tmp/execution.json
+
+# 客户端 JSONL 自动采集桥接器
+cat events.jsonl | python3 scripts/project_execution_capture.py \
+  --project-id 8 --task-id 123 --source-tool claude \
+  --state /tmp/execution.json --output-dir /tmp/execution \
+  --incomplete --missing "客户端未提供隐藏上下文" --publish
 ```
 
 ### File cabinet management
@@ -102,6 +108,8 @@ All successful commands print JSON to stdout. Failures print a concise error to 
 ## Task Execution Archive
 
 When an AI client or Agent is carrying out a concrete Project task, preserve the complete history available to the caller: user messages, assistant messages, tool calls, tool results, attachment references, decisions, and the final result. Start an `executionId`, append records as they become available, finalize the three archive files, then publish them to the task. The archive must be marked incomplete when the host cannot expose hidden context or full tool output. Use the same `executionId` for retries so publication can verify and reuse existing task attachments.
+
+For automatic client integration, use the client-neutral JSONL bridge described in [references/auto-capture.md](references/auto-capture.md). The bridge accepts events from hooks, wrappers, or native event streams; it does not claim access to hidden prompts or internal reasoning and must not upload when the target task is ambiguous.
 
 ## File Cabinet Workflow
 

@@ -30,6 +30,7 @@ class ConfigError(RuntimeError):
 class Settings:
     base_url: str
     token: str
+    upload_directory: str
     config_path: Path
     source: str
 
@@ -102,15 +103,26 @@ def load(explicit_path: str | Path | None = None) -> Settings:
     env_url = os.environ.get("YEYING_WAREHOUSE_URL", "").strip()
     env_token = os.environ.get("YEYING_WAREHOUSE_TOOL_TOKEN", "").strip()
     legacy_token = os.environ.get("YEYING_WAREHOUSE_TOKEN", "").strip()
+    env_upload_directory = os.environ.get("YEYING_WAREHOUSE_UPLOAD_DIRECTORY", "").strip()
     file_url = str(section.get("url", "")).strip()
     file_token = str(section.get("tool_token", "")).strip()
+    file_upload_directory = str(section.get("upload_directory", "")).strip()
     base_url = (env_url or file_url).rstrip("/")
     token = env_token or legacy_token or file_token
+    upload_directory = env_upload_directory or file_upload_directory
     if not base_url:
         raise ConfigError("YEYING_WAREHOUSE_URL or [warehouse].url is required")
     if not token:
         raise ConfigError("YEYING_WAREHOUSE_TOOL_TOKEN or [warehouse].tool_token is required")
+    if upload_directory:
+        parts = upload_directory.split("/")
+        if not upload_directory.startswith("/") or any(part in (".", "..") for part in parts):
+            raise ConfigError(
+                "[warehouse].upload_directory must be an absolute Warehouse path "
+                "without '.' or '..' segments"
+            )
     source = "env" if env_url or env_token or legacy_token else "file"
     if not env_url and not env_token and not legacy_token and not file_url and not file_token:
         source = "default"
-    return Settings(base_url=base_url, token=token, config_path=path, source=source)
+    return Settings(base_url=base_url, token=token, upload_directory=upload_directory,
+                    config_path=path, source=source)
