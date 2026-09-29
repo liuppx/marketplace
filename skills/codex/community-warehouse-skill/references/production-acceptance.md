@@ -4,10 +4,22 @@
 
 ## 前置条件
 
+可以使用环境变量：
+
 ```bash
 export YEYING_WAREHOUSE_URL="https://warehouse.example.com"
 export YEYING_WAREHOUSE_TOOL_TOKEN="<短期、可撤销、限定路径的 Tool credential>"
 ```
+
+也可以使用默认配置文件 `~/.yeying/skills/warehouse/config.toml`：
+
+```toml
+[warehouse]
+url = "https://warehouse.example.com"
+tool_token = "<短期、可撤销、限定路径的 Tool credential>"
+```
+
+配置文件必须使用 `0600` 权限。推荐只在文件中保存 URL，通过环境变量注入 token。两种方式的完整优先级见 [配置约定](configuration.md)。
 
 凭证至少需要：
 

@@ -3,10 +3,11 @@
 
 import argparse
 import json
-import os
 import sys
 import urllib.error
 import urllib.request
+
+from warehouse_config import ConfigError, load
 
 
 def fail(message, code=2):
@@ -14,14 +15,12 @@ def fail(message, code=2):
     raise SystemExit(code)
 
 
-def config():
-    base = os.environ.get("YEYING_WAREHOUSE_URL", "").rstrip("/")
-    token = os.environ.get("YEYING_WAREHOUSE_TOOL_TOKEN", "") or os.environ.get("YEYING_WAREHOUSE_TOKEN", "")
-    if not base:
-        fail("YEYING_WAREHOUSE_URL is required")
-    if not token:
-        fail("YEYING_WAREHOUSE_TOOL_TOKEN or YEYING_WAREHOUSE_TOKEN is required")
-    return base, token
+def config(config_path=None):
+    try:
+        settings = load(config_path)
+    except ConfigError as exc:
+        fail(str(exc))
+    return settings.base_url, settings.token
 
 
 def request(method, path, token, payload=None, trace_id=None):
@@ -61,6 +60,7 @@ def call_tool(base, token, name, arguments, trace_id=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--config", help="TOML 配置文件，默认 ~/.yeying/skills/warehouse/config.toml")
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("catalog")
     call = sub.add_parser("call")
@@ -88,7 +88,7 @@ def main():
     stat.add_argument("path")
     stat.add_argument("--trace-id")
     args = parser.parse_args()
-    base, token = config()
+    base, token = config(args.config)
 
     if args.command == "catalog":
         return request("GET", base + "/api/v1/public/tools/warehouse", token, trace_id=getattr(args, "trace_id", None))

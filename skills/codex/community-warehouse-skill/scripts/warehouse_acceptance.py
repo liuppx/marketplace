@@ -6,12 +6,13 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import sys
 import urllib.error
 import urllib.request
 import uuid
 from typing import Any
+
+from warehouse_config import ConfigError, load
 
 
 TOOLS = {
@@ -23,12 +24,12 @@ TOOLS = {
 }
 
 
-def config() -> tuple[str, str]:
-    base = os.environ.get("YEYING_WAREHOUSE_URL", "").rstrip("/")
-    token = os.environ.get("YEYING_WAREHOUSE_TOOL_TOKEN", "") or os.environ.get("YEYING_WAREHOUSE_TOKEN", "")
-    if not base or not token:
-        raise RuntimeError("YEYING_WAREHOUSE_URL and a Warehouse Tool token are required")
-    return base, token
+def config(config_path: str | None = None) -> tuple[str, str]:
+    try:
+        settings = load(config_path)
+    except ConfigError as exc:
+        raise RuntimeError(str(exc)) from exc
+    return settings.base_url, settings.token
 
 
 def request(base: str, token: str, method: str, suffix: str, payload: dict[str, Any] | None = None, trace_id: str = "") -> Any:
@@ -63,6 +64,7 @@ def call(base: str, token: str, name: str, arguments: dict[str, Any], trace_id: 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--config", help="TOML 配置文件，默认 ~/.yeying/skills/warehouse/config.toml")
     parser.add_argument("--path", required=True, help="已授权的测试对象路径；测试不会删除该对象")
     parser.add_argument("--list-prefix", help="可选的已授权 list 前缀；默认使用对象所在空间根路径")
     parser.add_argument("--content", default="warehouse-tool-acceptance")
@@ -70,7 +72,7 @@ def main() -> int:
     args = parser.parse_args()
     trace_id = args.trace_id or "acceptance-" + uuid.uuid4().hex
     try:
-        base, token = config()
+        base, token = config(args.config)
         catalog = request(base, token, "GET", "/api/v1/public/tools/warehouse", trace_id=trace_id)
         actual = {item.get("name") for item in catalog.get("tools", [])}
         missing = sorted(TOOLS - actual)

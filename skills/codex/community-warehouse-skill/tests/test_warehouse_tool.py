@@ -1,6 +1,8 @@
 import json
 import os
+import stat
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -57,6 +59,31 @@ class WarehouseToolClientTest(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 warehouse_tool.config()
             self.assertEqual(raised.exception.code, 2)
+
+    def test_toml_config_and_environment_override(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "config.toml"
+            path.write_text('[warehouse]\nurl = "http://file.test"\ntool_token = "file-token"\n', encoding="utf-8")
+            path.chmod(stat.S_IRUSR | stat.S_IWUSR)
+            with mock.patch.dict(os.environ, {}, clear=True):
+                settings = __import__("warehouse_config").load(path)
+                self.assertEqual(settings.base_url, "http://file.test")
+                self.assertEqual(settings.token, "file-token")
+            with mock.patch.dict(os.environ, {
+                "YEYING_WAREHOUSE_URL": "http://env.test",
+                "YEYING_WAREHOUSE_TOOL_TOKEN": "env-token",
+            }, clear=True):
+                settings = __import__("warehouse_config").load(path)
+                self.assertEqual(settings.base_url, "http://env.test")
+                self.assertEqual(settings.token, "env-token")
+
+    def test_toml_token_requires_private_file_mode(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "config.toml"
+            path.write_text('[warehouse]\nurl = "http://file.test"\ntool_token = "file-token"\n', encoding="utf-8")
+            path.chmod(stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP)
+            with self.assertRaises(__import__("warehouse_config").ConfigError):
+                __import__("warehouse_config").load(path)
 
 
 if __name__ == "__main__":

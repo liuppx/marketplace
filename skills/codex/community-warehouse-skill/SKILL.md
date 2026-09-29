@@ -46,6 +46,8 @@ description: Use YeYing Warehouse's generic, scoped, auditable object capabiliti
 
 ## 认证配置
 
+配置加载顺序为：命令行 `--config`、`YEYING_WAREHOUSE_CONFIG`、默认文件 `~/.yeying/skills/warehouse/config.toml`。环境变量 `YEYING_WAREHOUSE_URL` 和 `YEYING_WAREHOUSE_TOOL_TOKEN` 会覆盖 TOML 中的同名字段；完整约定见 [配置约定](references/configuration.md)。
+
 当前 HTTP Tool 入口使用 Warehouse 的用户态 Bearer JWT。安装 Skill 不会自动获得登录身份，调用方必须在运行环境中显式提供：
 
 ```bash
