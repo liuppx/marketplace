@@ -10,7 +10,7 @@ import uuid
 from pathlib import Path
 
 from project_api import ProjectApiError
-from project_execution_archive import finalize_state, load_state, now, publish, write_json
+from project_execution_archive import attach_lifecycle, finalize_state, load_state, now, publish, write_json
 from project_execution_capture import new_state, normalize_event
 from project_task_binding import TaskBindingError
 
@@ -30,6 +30,7 @@ def append_event(args: argparse.Namespace) -> dict[str, object]:
     if args.finalize:
         state["complete"] = args.complete
         state["missing"] = [] if args.complete else (args.missing or ["client did not expose complete native context"])
+        attach_lifecycle(state, args.lifecycle_file)
         state = finalize_state(state, args.output_dir)
     else:
         state["status"] = "running"
@@ -52,6 +53,7 @@ def parser() -> argparse.ArgumentParser:
     command.add_argument("--execution-id")
     command.add_argument("--state", type=Path, required=True)
     command.add_argument("--output-dir", type=Path, required=True)
+    command.add_argument("--lifecycle-file", type=Path, help="研发生命周期 JSON 快照")
     command.add_argument("--finalize", action="store_true")
     command.add_argument("--complete", action="store_true")
     command.add_argument("--missing", action="append", default=[])

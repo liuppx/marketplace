@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from project_api import ProjectApiError
-from project_execution_archive import SCHEMA, finalize_state, load_state, now, publish, redact, write_json
+from project_execution_archive import SCHEMA, attach_lifecycle, finalize_state, load_state, now, publish, redact, write_json
 from project_task_binding import TaskBindingError, resolve_binding
 
 
@@ -41,6 +41,7 @@ def new_state(args: argparse.Namespace) -> dict[str, Any]:
         "attachments": [],
         "event_ids": [],
         "output_dir": str(args.output_dir),
+        "lifecycle_file": str(args.lifecycle_file) if args.lifecycle_file else None,
     }
 
 
@@ -87,6 +88,7 @@ def capture(args: argparse.Namespace) -> dict[str, Any]:
             source.close()
     state["complete"] = args.complete
     state["missing"] = [] if args.complete else (args.missing or ["client did not expose complete native context"])
+    attach_lifecycle(state, args.lifecycle_file)
     state = finalize_state(state, args.output_dir)
     write_json(args.state, state)
     if args.publish:
@@ -104,6 +106,7 @@ def parser() -> argparse.ArgumentParser:
     command.add_argument("--execution-id", default=None)
     command.add_argument("--state", type=Path, required=True)
     command.add_argument("--output-dir", type=Path, required=True)
+    command.add_argument("--lifecycle-file", type=Path, help="研发生命周期 JSON 快照")
     command.add_argument("--input-file", type=Path)
     completion = command.add_mutually_exclusive_group()
     completion.add_argument("--complete", action="store_true")

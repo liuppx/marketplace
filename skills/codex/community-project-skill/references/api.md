@@ -24,6 +24,7 @@ Sort GET query parameters by name and encode with RFC 3986 rules. Array paramete
 | --- | --- | --- |
 | `projects` | `GET /api/project/lists` | 项目范围 |
 | `tasks` | `GET /api/project/task/lists` | 项目范围 |
+| `task-create` | `POST /api/project/task/add` | 项目范围；需要任务创建权限 |
 | `task` | `GET /api/project/task/one` 等 | 项目范围 |
 | `comment` | `POST /api/dialog/msg/sendtext` | 项目范围；传入 `--update-id` 时编辑当前用户的指定消息 |
 | `update` | `POST /api/project/task/update` | 项目范围 |

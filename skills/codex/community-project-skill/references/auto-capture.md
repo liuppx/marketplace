@@ -46,6 +46,7 @@ Claude Hook 逐事件持久化方式见 [Claude Code Hook 接入](./claude-hooks
 cat events.jsonl | python3 scripts/project_execution_capture.py \
   --project-id 8 --task-id 123 --source-tool claude --model claude-sonnet \
   --state /tmp/execution.json --output-dir /tmp/execution \
+  --lifecycle-file /path/to/repository/.project-lifecycle.json \
   --incomplete --missing "客户端未提供隐藏上下文"
 ```
 

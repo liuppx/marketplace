@@ -249,6 +249,19 @@ def build_parser() -> argparse.ArgumentParser:
     tasks.add_argument("--page", type=int, default=1)
     tasks.add_argument("--pagesize", type=int, default=50)
 
+    task_create = subparsers.add_parser("task-create", help="创建项目任务")
+    task_create.add_argument("--project-id", type=int, required=True)
+    task_create.add_argument("--name", required=True)
+    task_create.add_argument("--column-id", help="列表 ID 或名称；留空使用项目第一个列表")
+    task_create_content = task_create.add_mutually_exclusive_group()
+    task_create_content.add_argument("--content", help="Markdown 格式的任务详情")
+    task_create_content.add_argument("--content-file", type=Path, help="包含任务详情的 UTF-8 文件")
+    task_create.add_argument("--content-format", choices=("markdown", "html"), default="markdown")
+    task_create.add_argument("--owner", type=int, help="负责人用户 ID")
+    task_create.add_argument("--times", help="JSON 数组或对象")
+    task_create.add_argument("--subtasks", help="JSON 子任务数组")
+    task_create.add_argument("--top", action="store_true", help="将任务排到列表最前面")
+
     task = subparsers.add_parser("task", help="读取任务详情和最近讨论")
     task.add_argument("--task-id", type=int, required=True)
 
@@ -350,6 +363,27 @@ def main() -> int:
             if args.keyword:
                 params["name"] = args.keyword
             data = request_api(config, "GET", "/api/project/task/lists", params)
+        elif args.command == "task-create":
+            params: dict[str, Any] = {"project_id": args.project_id, "name": args.name}
+            if args.column_id:
+                params["column_id"] = args.column_id
+            content = args.content
+            if args.content_file:
+                content = args.content_file.read_text(encoding="utf-8")
+            if content is not None:
+                params["content"] = content if args.content_format == "html" else markdown_to_task_html(content)
+            if args.owner is not None:
+                params["owner"] = args.owner
+            if args.top:
+                params["top"] = 1
+            for key in ("times", "subtasks"):
+                value = getattr(args, key)
+                if value is not None:
+                    try:
+                        params[key] = json.loads(value)
+                    except json.JSONDecodeError as exc:
+                        raise ProjectApiError(f"--{key} 必须是有效 JSON") from exc
+            data = request_api(config, "POST", "/api/project/task/add", params)
         elif args.command == "task":
             task = request_api(config, "GET", "/api/project/task/one", {"task_id": args.task_id})
             content = request_api(config, "GET", "/api/project/task/content", {"task_id": args.task_id})

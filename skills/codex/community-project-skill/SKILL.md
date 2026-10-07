@@ -1,11 +1,13 @@
 ---
 name: community-project-skill
-description: Access YeYing community Project's standard APIs with AK/SK-signed access tokens to read projects, tasks, discussions, and files or to update task fields, status, and comments. Also manage the Project file cabinet (list, create, read, save, upload, search, link, move, delete documents). Use when Codex needs to fetch work from the community Project product, inspect or update a Project task, download task files, collaborate around a task ID, report progress, synchronize completed work back to Project, or manage shared community documents through the file cabinet.
+description: Manage YeYing Project development tasks across intake, analysis, solution approval, implementation, verification, delivery, and audit with AK/SK-signed APIs. Create and update tasks, bind workspaces, associate Codex/Claude/other Agent execution archives, record repository commits and GitHub PR results, and manage the Project file cabinet. Use when a community product task needs a traceable end-to-end delivery workflow; hidden prompts or hidden reasoning are never claimed as captured.
 ---
 
 # Community Project Collaboration
 
-Use the bundled client to treat Project as the source of truth for task context and execution updates, and as the shared hub for community documents. Never place AK/SK credentials in a repository, command output, task comment, or final response.
+Use the bundled client to treat Project as the source of truth for task context and lifecycle decisions, the local repository as the code source, and GitHub as the PR delivery source. Never place AK/SK credentials in a repository, command output, task comment, archive, or final response.
+
+The standard lifecycle is documented in [references/lifecycle.md](references/lifecycle.md). Do not start implementation before the task has a recorded analysis, a feasible solution, acceptance criteria, and explicit approval. Do not mark work complete before verification, PR metadata, and the execution archive are associated with the same task.
 
 For work performed by Codex, Claude, or another Agent on a specific task, use the independent execution archive workflow in [references/execution-archive.md](references/execution-archive.md). It records the available execution history, publishes the archive as task attachments, and writes one idempotent task reference. This workflow belongs to Project and does not require or call `community-warehouse-skill`.
 
@@ -50,6 +52,7 @@ Available commands:
 ```bash
 python3 scripts/project_api.py projects
 python3 scripts/project_api.py tasks --project-id 8
+python3 scripts/project_api.py task-create --project-id 8 --name "实现某功能" --content-file /tmp/request.md
 python3 scripts/project_api.py task --task-id 123
 python3 scripts/project_api.py comment --task-id 123 --content "已完成实现和验证。"
 python3 scripts/project_api.py comment --task-id 123 --content-file /tmp/project-update.md
@@ -61,8 +64,15 @@ python3 scripts/project_api.py status --task-id 123 --completed
 python3 scripts/project_api.py file-info --file-id 456
 python3 scripts/project_api.py download --file-id 456 --output /tmp/document.pdf
 
+# lifecycle state and gates
+python3 scripts/project_lifecycle.py bind --project-id 8 --task-id 123 --workdir /path/to/repository
+python3 scripts/project_lifecycle.py record --state /path/to/repository/.project-lifecycle.json --kind analysis --file /tmp/analysis.json --publish
+python3 scripts/project_lifecycle.py approve --state /path/to/repository/.project-lifecycle.json --by "负责人" --reference "Project 评论或会议记录引用"
+python3 scripts/project_lifecycle.py archive-link --state /path/to/repository/.project-lifecycle.json --manifest /tmp/execution/manifest.json --publish
+python3 scripts/project_lifecycle.py advance --state /path/to/repository/.project-lifecycle.json --to implementation
+
 # Task execution archive
-python3 scripts/project_execution_archive.py start --project-id 8 --task-id 123 --source-tool codex --state /tmp/execution.json --output-dir /tmp/execution
+python3 scripts/project_execution_archive.py start --project-id 8 --task-id 123 --source-tool codex --state /tmp/execution.json --output-dir /tmp/execution --lifecycle-file /path/to/repository/.project-lifecycle.json
 python3 scripts/project_execution_archive.py append --state /tmp/execution.json --role user --content "用户请求"
 python3 scripts/project_execution_archive.py finalize --state /tmp/execution.json --incomplete --missing "平台隐藏上下文"
 python3 scripts/project_execution_archive.py publish --state /tmp/execution.json
@@ -71,6 +81,7 @@ python3 scripts/project_execution_archive.py publish --state /tmp/execution.json
 cat events.jsonl | python3 scripts/project_execution_capture.py \
   --project-id 8 --task-id 123 --source-tool claude \
   --state /tmp/execution.json --output-dir /tmp/execution \
+  --lifecycle-file /path/to/repository/.project-lifecycle.json \
   --incomplete --missing "客户端未提供隐藏上下文" --publish
 ```
 
@@ -118,12 +129,15 @@ All successful commands print JSON to stdout. Failures print a concise error to 
 
 ## Task Workflow
 
-1. Resolve the task. If the user gives a task ID, call `task`. Otherwise list `projects`, select the relevant project from user context, then call `tasks`.
-2. Read the task title, description, content, members, tags, and recent discussion before changing code.
-3. Inspect the local repository and perform the requested work using its own instructions and quality gates.
-4. For substantial work, post a short progress comment only when it provides durable coordination value. Do not post routine tool narration.
-5. After verification, post a result comment containing the outcome, important files or behavior changed, tests run, and any blocker or remaining work.
-6. Keep the user's chat response aligned with what was written back to Project.
+1. Resolve or create the task. If the user gives a task ID, call `task`; otherwise list `projects` and `tasks`, or use `task-create` when the request has no existing task.
+2. Bind the repository with `project_lifecycle.py bind` or create-and-bind it with `project_lifecycle.py create`; keep `.project-task.json` and `.project-lifecycle.json` out of Git.
+3. Read the task title, description, content, members, tags, and recent discussion. Record the analysis and feasible solution, including scope, non-goals, risks, acceptance criteria, and test plan.
+4. Obtain explicit solution approval and advance the lifecycle gate before changing code. A verbal or hidden approval that has no traceable reference does not satisfy the gate.
+5. Inspect the local repository and perform the requested work using its own instructions and quality gates. Keep structured implementation and verification records in the lifecycle state.
+6. Run verification and record `passed=true` only when the acceptance criteria are covered. Use `github-api-push` for GitHub push/PR operations, then record the exact repository, branch, commit SHA, PR URL/number, CI and review state in a `pull_request` record.
+7. Capture and publish the available AI execution history with the same task and `executionId`; associate the lifecycle snapshot with `project_execution_archive.py finalize`.
+8. Advance to `completed` only after the PR, verification and audit archive are all present. Post a concise durable result comment; do not post routine tool narration.
+9. Keep the user's chat response aligned with what was written back to Project.
 
 ## Task Execution Archive
 
